@@ -21,7 +21,6 @@
        ;; count matters
        "name" "nnm" false))
 
-
 (deftest scoring
   (are [n p r] (= r (c/score-match p n))
        "" "" [true true true true true true]
@@ -34,5 +33,9 @@
 (deftest matching
   (let [subject c/rank-completions
         users ["TimMc" "chromakode" "Max" "mac" "intortus" "logan"]]
-    (is (= (take 4 (subject "M" users))
-           ["Max" "mac" "TimMc" "chromakode"]))))
+    (testing "Case, prefix, infix, and stable sort"
+      (is (= (subject "M" users)
+             ["Max" "mac" "TimMc" "chromakode" "intortus" "logan"])))
+    (testing "subseqs less than infix ci, and stable"
+      (is (= (subject "mc" users)
+             ["TimMc" "mac" "chromakode" "Max" "intortus" "logan"])))))
