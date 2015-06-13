@@ -19,14 +19,23 @@
   [part nick]
   ;; FIXME Use proper Unicode-aware case-folding, if not already
   (let [cf-part (.toLowerCase part)
-        cf-nick (.toLowerCase nick)]
-    (concat [(.startsWith nick part)
-             (.startsWith cf-nick cf-part)
-             (.contains nick part)
-             (.contains cf-nick cf-part)]
-            (lazy-seq
-             [(contains-subseq? nick part)
-              (contains-subseq? cf-nick cf-part)]))))
+        cf-nick (.toLowerCase nick)
+        ;; Test matrix:
+        ;;
+        ;; pre > cipre
+        ;;  v      v
+        ;; inf > ciinf
+        ;;  v      v
+        ;; sub > cisub
+        ;;
+        ;; Higher row implies lower; left column implies right column.
+        pre? (.startsWith nick part)
+        cipre? (or pre? (.startsWith cf-nick cf-part))
+        inf? (or pre? (.contains nick part))
+        ciinf? (or inf? cipre? (.contains cf-nick cf-part))
+        sub? (or inf? (contains-subseq? nick part))
+        cisub? (or sub? ciinf? (contains-subseq? cf-nick cf-part))]
+    [pre? cipre? inf? ciinf? sub? cisub?]))
 
 (defn rank-completions
   "Given a partial nick and a coll of usernames, yield sorted
