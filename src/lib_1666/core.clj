@@ -1,4 +1,5 @@
-(ns lib-1666.core)
+(ns lib-1666.core
+  (:require [org.timmc.handy :as h]))
 
 (defn contains-subseq?
   "Determines if nick contains the characters in the partial nick, in
@@ -26,3 +27,9 @@
             (lazy-seq
              [(contains-subseq? nick part)
               (contains-subseq? cf-nick cf-part)]))))
+
+(defn rank-completions
+  "Given a partial nick and a coll of usernames, yield sorted
+  usernames by match relevancy (best first)."
+  [part nicks]
+  (sort-by (partial score-match part) (comp - h/lexicomp) nicks))
