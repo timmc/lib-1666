@@ -23,12 +23,12 @@
 
 (deftest scoring
   (are [n p r] (= r (c/score-match p n))
-       "" "" [true true true true true true]
-       "TimMc" "" [true true true true true true]
-       "TimMc" "tm" [false false false false false true]
-       "TimMc" "TM" [false false false false true true]
-       "TimMc" "tim" [false true false true false true]
-       "TimMc" "Tim" [true true true true true true]))
+       "" "" 7
+       "TimMc" "" 7
+       "TimMc" "tm" 2
+       "TimMc" "TM" 3
+       "TimMc" "tim" 6
+       "TimMc" "Tim" 7))
 
 (deftest matching
   (let [subject c/rank-completions
