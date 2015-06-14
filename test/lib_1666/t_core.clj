@@ -3,23 +3,26 @@
             [clojure.test :refer :all]))
 
 (deftest subseqs
-  (are [n p r] (= r (c/contains-subseq? n p))
+  (are [n p res] (let [[f c s :as actual] (c/find-subseq n p)]
+                   (if f
+                     (= actual res)
+                     (= (first actual) (first res))))
        ;; trivial
-       "" "" true
-       "name" "" true
-       "" "cruft" false
-       "name" "name" true
+       "" "" [true true true]
+       "name" "" [true true true]
+       "" "cruft" [false nil nil]
+       "name" "name" [true true true]
        ;; extra
-       "name" "namex" false
+       "name" "namex" [false nil nil]
        ;; standard
-       "name" "nm" true
-       "name" "e" true
+       "name" "nm" [true false true]
+       "name" "e" [true true false]
        ;; off the end (potential index bug)
-       "name" "es" false
+       "name" "es" [false nil nil]
        ;; order matters
-       "name" "eman" false
+       "name" "eman" [false nil nil]
        ;; count matters
-       "name" "nnm" false))
+       "name" "nnm" [false nil nil]))
 
 (deftest scoring
   (are [n p r] (= r (c/score-match p n))
